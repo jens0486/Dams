@@ -18,6 +18,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import de.seideman.dams.helper.Connection;
+import de.seideman.dams.helper.Login;
 import de.seideman.dams.manager.CableManager;
 import de.seideman.dams.manager.CableManagerLocal;
 import de.seideman.dams.manager.ConnectionManager;
@@ -44,7 +45,14 @@ public class DBTest {
 	@Produces({ MediaType.TEXT_HTML })
 	@Path("/hello")
 	public String getHello() {
+		
+		Login lg = new Login();
+		
+		lg.loadUserFile();
+		
 		return "Hallo ich bin der Webservice Teil 2!";
+		
+		
 	}
 
 	@GET
