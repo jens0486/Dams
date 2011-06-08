@@ -44,7 +44,7 @@ public class DBTest {
 	@Produces({ MediaType.TEXT_HTML })
 	@Path("/hello")
 	public String getHello() {
-		return "Hallo ich bin ein Webservice!";
+		return "Hallo ich bin der Webservice Teil 2!";
 	}
 
 	@GET
