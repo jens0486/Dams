@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.eclipse.jdt.internal.compiler.ast.ThisReference;
+
 
 import de.seideman.dams.helper.Connection;
 import de.seideman.dams.manager.CableManager;
@@ -22,6 +22,8 @@ import de.seideman.dams.manager.CableManagerLocal;
 import de.seideman.dams.manager.ConnectionManager;
 import de.seideman.dams.manager.InterfaceManager;
 import de.seideman.dams.manager.InterfaceManagerLocal;
+import de.seideman.dams.manager.LoginManager;
+import de.seideman.dams.manager.LoginManagerLocal;
 import de.seideman.dams.manager.ObjectManager;
 import de.seideman.dams.manager.ObjectManagerLocal;
 import de.seideman.dams.persistence.Cable;
@@ -35,6 +37,7 @@ public class AndroidService {
 	private InterfaceManagerLocal im;
 	private ObjectManagerLocal om;
 	private ConnectionManager com;
+	private LoginManagerLocal lm;
 
 	
 	//Browser-Tester
@@ -142,6 +145,29 @@ public class AndroidService {
 		return json.toString();
 	}
 
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/login")
+	public String trylogin(@FormParam("user") String user, @FormParam("pass") String passHash) {
+		lm = new LoginManager();
+		JSONObject json = new JSONObject();
+	
+		System.out.println(passHash);
+		
+		try {
+			System.out.println(lm.login(user, passHash));
+			if(lm.login(user, passHash)){		
+				json.put("login", true);
+				json.put("user", user);
+			}else{
+				json = formJsonFailure("Login nicht erfolgreich!");
+			}
+		} catch (JSONException e) {
+			json = formJsonFailure("JSON-Fehler");
+		}
+		return json.toString();
+	}
+	
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/cableinfo")
