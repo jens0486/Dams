@@ -12,10 +12,8 @@ public class LoginManager implements LoginManagerLocal {
 	public Boolean login(String user, String passHash) {
 		Boolean result = false;
 		HashMap<String, String> users = loadUser();
-		System.out.println(users.containsKey(user)+" "+passHash.contains(users.get(user)));
-		
-		
-		if (users.containsKey(user) && passHash.contains(users.get(user))) {
+				
+		if (users.containsKey(user) && passHash.equals(users.get(user))) {
 			System.out.println("Jawohl");
 			result = true;
 		}
@@ -69,9 +67,6 @@ public class LoginManager implements LoginManagerLocal {
 				hash.put(user[0], user[2]);
 			}
 		}
-//		for (String key : hash.keySet()) {
-//			System.out.println(key + " " + hash.get(key));
-//		}
 		return hash;
 	}
 

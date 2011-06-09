@@ -155,7 +155,6 @@ public class AndroidService {
 		System.out.println(passHash);
 		
 		try {
-			System.out.println(lm.login(user, passHash));
 			if(lm.login(user, passHash)){		
 				json.put("login", true);
 				json.put("user", user);
