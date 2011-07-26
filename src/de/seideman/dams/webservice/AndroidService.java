@@ -20,6 +20,7 @@ import de.seideman.dams.helper.Connection;
 import de.seideman.dams.manager.CableManager;
 import de.seideman.dams.manager.CableManagerLocal;
 import de.seideman.dams.manager.ConnectionManager;
+import de.seideman.dams.manager.ConnectionManagerLocal;
 import de.seideman.dams.manager.InterfaceManager;
 import de.seideman.dams.manager.InterfaceManagerLocal;
 import de.seideman.dams.manager.LoginManager;
@@ -36,7 +37,7 @@ public class AndroidService {
 	private CableManagerLocal cm;
 	private InterfaceManagerLocal im;
 	private ObjectManagerLocal om;
-	private ConnectionManager com;
+	private ConnectionManagerLocal com;
 	private LoginManagerLocal lm;
 
 	
