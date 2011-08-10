@@ -21,8 +21,8 @@ public class CableManager implements CableManagerLocal {
 	}
 
 	public Cable getCableByName(String name) throws NoResultException {
-		Query q = em.createQuery("Select c FROM Cable c WHERE c.name= :arg1 ");
-		q.setParameter("arg1", name);
+		Query q = em.createQuery("Select c FROM Cable c WHERE c.name LIKE :arg1 ");
+		q.setParameter("arg1", "%"+name+"%");
 
 		Cable result = (Cable) q.getSingleResult();
 

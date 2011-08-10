@@ -102,33 +102,42 @@ public class AndroidService {
 		om = new ObjectManager();
 
 		JSONObject json = new JSONObject();
-		JSONArray jArray = new JSONArray();
+		JSONArray connectionArray = new JSONArray();
 
 		try {
 			List<Connection> connect = com.getConnection(cableName);
 			for (Connection c : connect) {
-				JSONObject temp = new JSONObject();
-				JSONArray intArray = new JSONArray();
-				temp.put("cable", c.getCable().getName());
-
-				for (CableInterface i : c.getInterfaces()) {
-					System.out.println(i.getId());
-
-					JSONObject inter = new JSONObject();
-					inter.put("intPanel", i.getPanel());
-					inter.put("intPort", i.getPort());
-					inter.put("intName", i.getName());
-					// Object with Interface i
-					SapObject obj = om.getObjectByInterface(i);
-					inter.put("intObject", formJsonSingle(obj));
-					// two Interfaces with including Objects
-					intArray.put(inter);
+				JSONObject cable = new JSONObject();
+				JSONArray interfaceArray = new JSONArray();
+				String ca = c.getCable().getName();
+				
+				//cable
+				if(!ca .contains("I-")){
+				
+					cable.put("cable", c.getCable().getName());
+					//passende Interfaces
+					for (CableInterface i : c.getInterfaces()) {
+						System.out.println(i.getId());
+						SapObject obj = om.getObjectByInterface(i);
+						
+						JSONObject inter = new JSONObject();
+						inter.put("intPanel", i.getPanel());
+						inter.put("intPort", i.getPort());
+						inter.put("intName", i.getName());
+						inter.put("intHostname", obj.getObjectHostname());
+						inter.put("intObjId", obj.getObjectId());
+						inter.put("intObjLocation", obj.getObjectLocation());
+						interfaceArray.put(inter);	
+					}
+					cable.put("interfaces", interfaceArray);
+					
+					connectionArray.put(cable);
+				}else{
+					// do nothing
 				}
-				temp.put("interfaces", intArray);
-				jArray.put(temp);
 			}
 			json.put("result", true);
-			json.put("connections", jArray);
+			json.put("connections", connectionArray);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		} catch (NoResultException nex) {
