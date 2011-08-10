@@ -168,6 +168,21 @@ public class AndroidService {
 		return json.toString();
 	}
 	
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/check")
+	public String trylogin() {
+		lm = new LoginManager();
+		JSONObject json = new JSONObject();
+	
+		try {
+				json.put("result", true);
+		} catch (JSONException e) {
+			json = formJsonFailure("JSON-Fehler");
+		}
+		return json.toString();
+	}
+	
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/cableinfo")
@@ -212,64 +227,75 @@ public class AndroidService {
 		List<SapObject> objects;
 		JSONObject json = null;
 		int param = Integer.valueOf(paramType);
-		System.out.print("objektinfo");
+	
 		switch (param) {
 		case 0: // Inventory Number
-			json = new JSONObject();
-			try {
-				object = om.getObjectByInventory(searchParam);
-				json = formJsonSingle(object);
-			} catch (NoResultException nex) {
-				json = formJsonFailure("Es konnte kein Objekt mit dieser Inventarnummer gefunden werden!");
-			}
+				json = new JSONObject();
+			
+				objects = om.getObjectByInventory(searchParam);
+				if (objects.size()>0) {
+					json = formJsonSize(objects);
+				}else{
+					json = formJsonFailure("Es konnte kein Objekt mit dieser Inventar-Nummer gefunden werden!");
+				}
+			
 			break;
 		case 1: // SerialNumber
 			json = new JSONObject();
-			try {
-				object = om.getObjectBySerial(searchParam);
-				json = formJsonSingle(object);
-			} catch (NoResultException nex) {
-				json = formJsonFailure("Es konnte kein Objekt mit dieser Seriennummer gefunden werden!");
-			}
+			
+				objects = om.getObjectBySerial(searchParam);
+				if (objects.size()>0) {
+					json = formJsonSize(objects);
+				}else{
+					json = formJsonFailure("Es konnte kein Objekt mit dieser Serien-Nummer gefunden werden!");
+				}
+			
 			break;
 		case 2: // IP-Adresse
-			json = new JSONObject();
-			 try {
-				 object = om.getObjectByIP(searchParam);
-				 json = formJsonSingle(object);
-			 } catch (NoResultException nex) {
-			 json =
-			 formJsonFailure("Es konnte kein Objekt mit dieser IP-Adresse gefunden werden!");
-			 }
-			break;
+				json = new JSONObject();
+			
+				 objects = om.getObjectByIP(searchParam);
+				 if (objects.size()>0) {
+					 json = formJsonSize(objects);
+				 }else{
+					 json = formJsonFailure("Es konnte kein Objekt mit dieser IP-Adresse gefunden werden!");
+				 }
+				break;
 		case 3: // Hostname
 			json = new JSONObject();
-			try {
+			
 				objects = (List<SapObject>) om.getObjectByHostname(searchParam);
-				json = formJsonMultiple(objects);
-			} catch (NoResultException nex) {
-				json = formJsonFailure("Es konnte kein Objekt mit diesem Hostnamen gefunden werden!");
-			}
-
-			objects = (List<SapObject>) om.getObjectBySerial(searchParam);
-			json = formJsonMultiple(objects);
+				if (objects.size()>0) {
+					json = formJsonSize(objects);
+				}else{
+					json = formJsonFailure("Es konnte kein Objekt mit diesem Hostnamen gefunden werden!");
+				}
+			
 			break;
-		case 4: // MacAdresse
-			json = new JSONObject();
-			try {
-				object = om.getObjectByMac(searchParam);
-				json = formJsonSingle(object);
-			} catch (NoResultException nex) {
-				json = formJsonFailure("Es konnte kein Objekt mit dieser MAC-Adresse gefunden werden!");
-			}
-			break;
-		case 5: // freie Suche
-			json = new JSONObject();
-			json = formJsonFailure("default, freie Suche");
-			break;
+		case 4: // Mac-Adresse
+				json = new JSONObject();
+				objects = om.getObjectByMac(searchParam);
+				if (objects.size()>0) {
+					json = formJsonSize(objects);
+				}else{
+					json = formJsonFailure("Es konnte kein Objekt mit dieser MAC-Adresse gefunden werden!");
+				}
+				break;
+		case 5: // get selected element
+				json = new JSONObject();
+				json = formJsonFailure("default, freie Suche");
+				break;
+		case 6: // free search
+				try {
+					object = om.getObjectById(searchParam);
+					json = formJsonSingle(object);
+				} catch (NoResultException nex) {
+					json = formJsonFailure("Es konnte kein Objekt mit dieser Objekt-ID gefunden werden!");
+				}
+				break;
 		default:
-			json = new JSONObject();
-			json = formJsonFailure("Falsche Parameter");
+				json = new JSONObject();
+				json = formJsonFailure("Falsche Parameter");
 		}
 
 		return json.toString();
@@ -351,17 +377,23 @@ public class AndroidService {
 		return json;
 	}
 
-	private JSONObject formJsonMultiple(List<SapObject> objects) {
+	private JSONObject formJsonSize(List<SapObject> objects) {
 		JSONObject json = new JSONObject();
 		JSONArray jarray = new JSONArray();
-		int z = 0;
-
+	
 		try {
+			json.put("result", true);
 			json.put("size", objects.size());
 
 			for (SapObject o : objects) {
-				jarray.put(z++, formJsonSingle(o));
+				JSONObject j = new JSONObject();
+				j.put("objectId", o.getObjectId());
+				j.put("hostname", o.getObjectHostname());
+				j.put("status", o.getObjectStatus());
+				jarray.put(j);
 			}
+			json.put("objects", jarray);
+			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

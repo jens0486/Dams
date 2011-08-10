@@ -22,7 +22,7 @@ public class ObjectManager implements ObjectManagerLocal {
 	}
 
 	@Override
-	public List<SapObject> getAllObjects() throws NoResultException {
+	public List<SapObject> getAllObjects() {
 		Query q = em.createQuery("Select o FROM SapObject o ");
 
 		List<SapObject> resultList = q.getResultList();
@@ -30,9 +30,8 @@ public class ObjectManager implements ObjectManagerLocal {
 		return resultList;
 	}
 
-	@Override
-	public List<SapObject> getObjectByType(String objectType)
-			throws NoResultException {
+	
+	public List<SapObject> getObjectByType(String objectType) {
 		Query q = em
 				.createQuery("Select o FROM SapObject o WHERE objectType = :arg1");
 		q.setParameter("arg1", objectType);
@@ -43,30 +42,26 @@ public class ObjectManager implements ObjectManagerLocal {
 	}
 
 	@Override
-	public SapObject getObjectBySerial(String serial) throws NoResultException {
+	public List<SapObject> getObjectBySerial(String serial) {
 		Query q = em
 				.createQuery("Select o FROM SapObject o WHERE o.objectSerial= :arg1 AND NOT o.objectStatus='Removed'");
 		q.setParameter("arg1", serial);
 
-		SapObject result = (SapObject) q.getSingleResult();
-		return result;
+		List<SapObject> resultList = q.getResultList();
+		return resultList;
 	}
 
 	@Override
-	public SapObject getObjectByInventory(String inventory)
-			throws NoResultException {
+	public List<SapObject> getObjectByInventory(String inventory){
 		Query q = em
-				.createQuery("Select o FROM SapObject o WHERE o.objectInventory = :arg1 AND o.objectLocation NOT LIKE :arg2 AND o.objectStatus NOT LIKE :arg3");
-		q.setParameter("arg1", inventory);
-		q.setParameter("arg2", "TSP%");
-		q.setParameter("arg3", "Removed");
-
-		SapObject result = (SapObject) q.getSingleResult();
-		return result;
+				.createQuery("Select o FROM SapObject o WHERE o.objectInventory LIKE :arg1");
+		q.setParameter("arg1", "%"+inventory+"%");
+	
+		List<SapObject> resultList = q.getResultList();
+		return resultList;
 	}
 
-	public List<SapObject> getObjectByHostname(String hostname, String location)
-			throws NoResultException {
+	public List<SapObject> getObjectByHostname(String hostname, String location){
 		Query q = em
 				.createQuery("Select DISTINCT o FROM SapObject o WHERE o.objectHostname LIKE :arg1 AND o.objectLocation LIKE :arg2 AND NOT o.objectStatus='Removed'");
 		q.setParameter("arg1", "%" + hostname + "%");
@@ -76,10 +71,9 @@ public class ObjectManager implements ObjectManagerLocal {
 		return resultList;
 	}
 
-	public List<SapObject> getObjectByHostname(String hostname)
-			throws NoResultException {
+	public List<SapObject> getObjectByHostname(String hostname){
 		Query q = em
-				.createQuery("Select DISTINCT o FROM SapObject o WHERE o.objectHostname LIKE :arg1 AND NOT o.objectStatus='Removed'");
+				.createQuery("Select DISTINCT o FROM SapObject o WHERE o.objectHostname LIKE :arg1");
 
 		q.setParameter("arg1", "%" + hostname + "%");
 		List<SapObject> resultList = q.getResultList();
@@ -104,18 +98,25 @@ public class ObjectManager implements ObjectManagerLocal {
 		return (SapObject) q.getSingleResult();
 	}
 
-	public SapObject getObjectByIP(String ipAdresse) throws NoResultException {
+	public List<SapObject> getObjectByIP(String ipAdresse){
 		Query q = em
-				.createQuery("Select o FROM SapObject o, CableInterface i WHERE i.ip LIKE :arg1 AND o.objectId = i.objectId AND NOT o.objectStatus='Removed'");
+				.createQuery("Select o FROM SapObject o, CableInterface i WHERE i.ip LIKE :arg1 AND o.objectId = i.objectId");
+		
 		q.setParameter("arg1", "%"+ipAdresse+"%");
-		return (SapObject) q.getSingleResult();
+		
+		List<SapObject> resultList = q.getResultList();
+		System.out.println("liste ip: "+resultList.toString());
+		System.out.println("liste si: "+resultList.size());
+	 return resultList;
 	}
 
-	public SapObject getObjectByMac(String macAdresse) throws NoResultException {
+	public List<SapObject> getObjectByMac(String macAdresse){
 		Query q = em
 				.createQuery("Select o FROM SapObject o, CableInterface i WHERE i.vlan = :arg1 AND o.objectId = i.objectId AND NOT o.objectStatus='Removed' ");
 		q.setParameter("arg1", macAdresse);
-		return (SapObject) q.getSingleResult();
+		
+		List<SapObject> resultList = q.getResultList();
+		return resultList;
 	}
 
 }
