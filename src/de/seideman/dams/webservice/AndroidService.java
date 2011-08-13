@@ -180,7 +180,7 @@ public class AndroidService {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/check")
-	public String trylogin() {
+	public String tryWebService() {
 		lm = new LoginManager();
 		JSONObject json = new JSONObject();
 	
@@ -192,40 +192,6 @@ public class AndroidService {
 		return json.toString();
 	}
 	
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	@Path("/cableinfo")
-	public String getCableInfo(@FormParam("cableName") String cableName) {
-		cm = new CableManager();
-		Cable cable;
-		JSONObject json = new JSONObject();
-
-		try {
-			cable = cm.getCableByName(cableName);
-			json.put("result", true);
-			json.put("length", cable.getLength());
-			json.put("name", cable.getName());
-			json.put("color", cable.getColor());
-			json.put("type", cable.getType());
-
-		} catch (JSONException e) {
-			e.printStackTrace();
-		} catch (NoResultException nex) {
-			try {
-				json.put("result", false);
-				json.put("failure",
-						"Es konnte kein passendes Kabel gefunden werden!");
-
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-
-		return json.toString();
-	}
-
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("objectinfo")
@@ -410,12 +376,6 @@ public class AndroidService {
 		return json;
 	}
 
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	@Path("/objectlocation")
-	public String getObjectLocation(String searchParam) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 }
